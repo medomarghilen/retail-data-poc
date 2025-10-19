@@ -1,1 +1,1 @@
-{"_invocation_id": "18eac807-1bcd-4937-ac9d-c4b46f5df616", "linked": {"0": {"name": "model.retail_poc.stg_transactions", "type": "model", "succ": [1]}, "1": {"name": "model.retail_poc.fact_orders", "type": "model"}}}
+{"_invocation_id": "071c0edc-faa7-46f2-ba82-e9dd550ff337", "linked": {"0": {"name": "model.retail_poc.stg_transactions", "type": "model", "succ": [1]}, "1": {"name": "model.retail_poc.fact_orders", "type": "model"}}}
