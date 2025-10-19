@@ -11,12 +11,15 @@ Ce projet met en place une architecture **data moderne** avec :
 
 ---
 ## 📂 Structure du projet
+
+```
 retail-poc/
 ├── docker-compose.yml
 ├── loader/              → Génère et charge les données
 ├── dbt/                 → Transformations dbt
 ├── flask_api/           → API Flask
 └── README.md
+```
 ## 🐳 Services Docker
 Service	| Rôle | Port |
 |----------|--------------|------|
