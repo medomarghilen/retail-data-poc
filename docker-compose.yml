@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/init_db.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+
+  loader:
+    build: ./loader
+    depends_on:
+      - postgres
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGDATABASE: demo
+      PGUSER: demo
+      PGPASSWORD: demo
+      ROWS: "500000"
+    # runs once then exits
+    command: ["python", "generate_and_load.py"]
+
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:1.7.16
+    container_name: retail-poc-dbt
+    working_dir: /usr/app/dbt
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      "
+        mkdir -p /usr/app/dbt/logs &&
+        echo '🔍 Running dbt debug...' &&
+        dbt debug --profiles-dir /usr/app/dbt &&
+        echo '🚀 Running dbt transformations...' &&
+        dbt run --profiles-dir /usr/app/dbt --project-dir /usr/app/dbt 2>&1 | tee /usr/app/dbt/logs/dbt_run.log &&
+        tail -f /usr/app/dbt/logs/dbt_run.log
+      "
+    volumes:
+      - ./dbt:/usr/app/dbt
+    depends_on:
+      - postgres
+      - loader
+    environment:
+      DBT_PROFILES_DIR: /usr/app/dbt
+
+  flask:
+    build: ./flask_api
+    depends_on:
+      - postgres
+      - dbt
+    environment:
+      DATABASE_URL: postgresql://demo:demo@postgres:5432/demo
+    ports:
+      - "5000:5000"
+
+volumes:
+  pgdata:

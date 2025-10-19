@@ -1,0 +1,19 @@
+name: 'retail_poc'
+version: '1.0.0'
+config-version: 2
+
+profile: 'retail_poc'
+
+model-paths: ["models"]
+
+models:
+  retail_poc:
+    +materialized: table
+    staging:
+      +schema: staging
+    marts:
+      +schema: analytics
+
+# prevent dbt from prefixing the default schema
+quoting:
+  schema: false
